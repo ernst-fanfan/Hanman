@@ -3,7 +3,7 @@
 from word_dictionary_module.words_manager import WordsManager
 
 
-class Test_Words_Manager_Module:
+class TestWordsManagerModule:
     words_manager = WordsManager()
 
     def test_words_dict(self):

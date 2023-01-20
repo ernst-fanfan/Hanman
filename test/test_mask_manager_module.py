@@ -4,7 +4,7 @@ from word_dictionary_module.mask_manager import MaskManager
 import pytest
 
 
-class Test_Mask_Manager_Module:
+class TestMaskManagerModule:
     @pytest.mark.parametrize("word", ["kissing", "love", "deaf", "fear"])
     def test_mask_word(self, word):
         """Test MaskManager instantiates and produce mask."""
