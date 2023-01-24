@@ -1,6 +1,7 @@
 """This test module tests the words_manager_module."""
 
 from word_dictionary_module.words_manager import WordsManager
+import pytest
 
 
 class TestWordsManagerModule:
@@ -13,8 +14,14 @@ class TestWordsManagerModule:
         assert type(self.words_manager.words_dict['words']) == list
         assert len(self.words_manager.words_dict['words']) > 100
 
-    def test_random_word(self):
+    @pytest.mark.parametrize("number_of_tries", [1, 4, 3, 10])
+    def test_random_word(self, number_of_tries):
         """Test random_word function."""
-        rand_word = self.words_manager.random_word()
-        assert rand_word in self.words_manager.words_dict['words']
-        assert len(rand_word) > 3
+        for _ in range(number_of_tries):
+            rand_word1 = self.words_manager.random_word()
+            rand_word2 = self.words_manager.random_word()
+            assert rand_word1 in self.words_manager.words_dict['words']
+            assert len(rand_word1) > 3
+            assert rand_word2 in self.words_manager.words_dict['words']
+            assert len(rand_word2) > 3
+            assert rand_word2 != rand_word1
