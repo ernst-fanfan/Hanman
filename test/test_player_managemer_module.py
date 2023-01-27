@@ -23,3 +23,13 @@ class TestPlayerManagerModule:
         assert len(player_manager.players) == 2
         for name in [name1, name2]:
             assert player_manager.players[name].get_info('name') == name
+
+    @pytest.mark.parametrize('name, tries', [('Mark',1), ('Paul', 2),('Ark', 0), ('R2D2', 5)])
+    def test_update_and_get_player_info(self, name, tries):
+        player_manager = PlayerManager()
+        player_manager.init_player(name)
+        player_manager.update_player_info(player=name, key='tries', value=tries)
+        test_tries = player_manager.get_player_info(player=name, key='tries')
+        test_name = player_manager.get_player_info(player=name, key='name')
+        assert name == test_name
+        assert tries == test_tries
