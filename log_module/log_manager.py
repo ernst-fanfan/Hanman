@@ -13,47 +13,62 @@ import os
 import functools
 from typing import Callable, TypeVar, ParamSpec
 
-# for testing purposes. will replace with a constant file
 APP = 'HANGMAN'
-
-# START OF SCRIPT
 WrappedReturn = TypeVar("WrappedReturn")
 WrappedParams = ParamSpec("WrappedParams")
-
-LOGGER = logging.getLogger()
-LOGGER.setLevel(logging.DEBUG)
-# TODO: erase after gae
-logging.basicConfig(filename=f'{APP}.log',
+filename = f'{APP}.log'
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+logging.basicConfig(filename=filename,
                     format='%(asctime)s %(message)s',
-                    filemode='w')
+                    filemode='a')
 
 
 def parse_script_name(path):
     return os.path.basename(path)
 
 
-def with_logging(func: Callable[WrappedParams, WrappedReturn]) -> Callable[
-    WrappedParams, WrappedReturn]:
-    name = parse_script_name(__file__)
-    preamble = f"INFO|{APP}|{name}"
+def erase_logs() -> None:
+    with open(filename, 'w') as file:
+        file.write("")
 
-    @functools.wraps(func)
-    def wrapper(*args: WrappedParams.args, **kwargs: WrappedParams.kwargs) -> WrappedReturn:
-        logging.info(preamble + f": Calling {func.__name__}")
-        value = None
-        try:
-            value = func(*args, **kwargs)
-        except BaseException as error:
-            logging.debug(preamble.replace('INFO', 'ERROR') + f"|{func.__name__}: {error}")
 
-        logging.info(preamble + f": Finished {func.__name__}")
-        return value
-
-    return wrapper
+def read_log() -> str:
+    with open(filename, 'r') as file:
+        debug(f"file= {file.readlines()}")
+        return file.readlines()
 
 
 def debug(message: str = "") -> None:
     name = parse_script_name(__file__)
     preamble = f"DEBUG|{APP}|{name}"
-    logging.debug(msg=preamble + f": {message}")
+    logger.debug(msg=preamble + f": {message}")
 
+
+def with_logging(func: Callable[WrappedParams, WrappedReturn]) -> Callable[WrappedParams, WrappedReturn]:
+    name = parse_script_name(__file__)
+    preamble = f"INFO|{APP}|{name}"
+
+    @functools.wraps(func)
+    def wrapper(*args: WrappedParams.args, **kwargs: WrappedParams.kwargs) -> WrappedReturn:
+        logger.info(preamble + f": Calling {func.__name__}")
+        value = None
+        try:
+            value = func(*args, **kwargs)
+        except BaseException as error:
+            logger.debug(preamble.replace('INFO', 'ERROR') + f"|{func.__name__}: {error}")
+
+        logger.info(preamble + f": Finished {func.__name__}")
+        return value
+
+    return wrapper
+
+
+@with_logging
+def divider(num1: int, num2: int):
+    print('rknrn')
+    return num1 / num2
+
+
+divider(1, 1)
+divider(1, 0)
